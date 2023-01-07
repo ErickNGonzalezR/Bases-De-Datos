@@ -1,0 +1,437 @@
+
+Entidad 
+    ES muy similar a un objeto que reprecenta algo en el mundo real. y se pone en plural 
+    porque representa a un grupo de objetos
+
+Entidad debil
+    No puede exstir sin una entidad fuerte
+    libro (Entidad Fuerte) -> ejemplares (Entidad debil)
+
+Atributos 
+    Son las cosas que lo hacen ser una entidad 
+
+Atributos Multivaluado
+    Son atributos que hay mas de uno en una entidad 
+
+Atributos Compuestos
+    Esta compuesto de otros atributos
+
+Atributos de antiguedad
+    son atributos que se pueden calcular apartir del año
+
+Relaciones
+    Se definen por vervos (tener)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Diagrama Entidad Relacion  
+    Entidad: Se encierran en un cuadrado
+    Entidad debil: Se encierran en un cuadrado con doble linea 
+    Atributos: Se encierran en ovalos 
+    Atributos Multivaluado: Se encierran en un ovalo con doble linea  
+    Atributos de antiguedad: Se encierran con un ovalo punteado
+    Atributos de identidad o llave: Se en cierra en un ovalo subrayando el atributo
+    Relaciones: Se encierran en un rombo.
+
+    Cardinalidad
+        Cardinalidad 1 A 1 o 1:1 : Linea continua -|-------|- o mas estrictos -|-|----------|-|-
+
+        Cardinalidad 0 a 1 : linea punteada -|--------|-
+
+        Cardinalidad 1 a n o 1 a muchos: Linea continua y se parte en 3 al final -|-----------o-<-
+                                        o -|-----------<-
+                                        o mas estrictos -|-|----------|<-
+
+        Cardinalidad 0 a n: linea cuntinua y se divide en 3 al final -|-o------------|<- o
+                            linea punteada -|-------|<-
+
+        Cardinalidad n a n : Linea continua enpieza en 3 y termina en 3 ->-------------<- o 
+                                ->-|-------|-<-    
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Tipos de datos 
+    Texto
+        - CHAR (n)          ->      Guarda caracteres y cadenas de caracteres  
+        - VARCHAR (n) 255   ->      Guarda caracteres y cadenas de caracteres (es mas dinamico con la memoria)
+        - TEXT              ->      Guarda caracteres y cadenas de caracteres
+    
+    Numeros
+        - INTEGER           ->      Guarda numeros enteros
+        - BIGINT            ->      Guarda numeros muy grandes
+        - SMALLINT          ->      Guarda numeros muy pequeños
+        - DECIMAL (n,s)     ->      Guarda numeros decimales
+        - NUMERIC (n,s)     ->      Guarda numeros decimales
+
+    Fecha/Hora
+        - DATE              ->      Guarda la fecha
+        - TIME              ->      Guarda la hora del dia 
+        - DATETIME          ->      Guarda guarda la fecha y hora  
+        - TIMESTAMP         ->      Guarda guarda la fecha y hora
+
+    Logicos
+        - BOOLEAN           ->      Guarda si es true o false (1 o 0)
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////        
+
+Constrains (Restricciones)
+
+    Constrains              Descripcion
+    NOT NULL                Se asegura que la columna no tenga valores nulos
+    UNIQUE                  Se asegura que cada valor en la columna no se repita
+    PRIMARY KEY             Es una combicacion de NOT NULL Y UNIQUE
+    FOREIGN KEY             Identifica de manera unica una tupla en otra tabla 
+    CHECK                   Se asegura que el valor en la columna cumpla una condicion dada 
+    DEFAULT                 Coloca un valor por defecto cuando no hay un valor especificado
+    INDEX                   Se crea por columna para permitir busquedas mas rapidas 
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+
+Normalizacion
+    Primera forma normal (1FN)
+        Atributos atomicos (sin repetir campos)
+
+        Sin Normalizar                                              
+
+        alumno      nivel_curso     nombre_curso        Materia_1       materia_2
+        Juanito     Maestria        Data Engieering    MySQL           Python
+        Pepito      Licenciatura    Programacion        MySQL           Python
+
+        Normalizada      
+        ---------------------------------------- alumnos --------------------------------------         
+        alumno_id       alumno          nivel_curso         nombre_curso            Materia                 
+        1               Juanito         Maestria            Data Engieering        MySQL
+        1               Juanito         Maestria            Data Engieering        Python
+        2               Pepito          Licenciatura        Programacion            MySQL
+        2               Pepito          Licenciatura        Programacion            Python
+
+    Segunda forma normal (2FN)
+        Cumple 1FN y Cada campo de la tabla debe depender de una clave unica
+
+        *Separamos la tabla alumnos de la tabla Materias
+
+        Nueva Tabla Alumnos 
+        ----------------------------- alumnos -------------------------------------
+        alumno_id       alumno          nivel_curso             nombre_curso
+        1               Juanito         Maestria                Data Engieering
+        2               Pepito          Licenciatura            Programacion
+
+        Nueva Tabla Materias 
+        --------------- materias --------------- 
+        materia_id      alumno_id       materia
+        1               1               MySQL
+        2               1               Python
+        3               2               MySQL
+        4               2               Python
+
+    Tercera forma normal (3FN)
+
+        Cumple 1FN y 2FN y los que campos NO son clave No deben tener dependencias
+
+        * Separamos la tabla de cursos a la de alumnos
+
+        --------------- alumnos -----------------
+        alumno_id       alumno          curso_id
+         1              Juanito         1
+         2              Pepito          2
+
+        ------------------ cursos ---------------------
+        curso_id        nivel_curso     nombre_curso
+        1               Maestria        Data Engieering
+        2               Licenciatura    Programacion
+
+        -------------- materias -----------------
+        materia_id      alumno_id       materia       
+        1               1               MySQL
+        2               1               Python
+        3               2               MySQL
+        4               2               Python
+
+    Cuarta forma normal(4FN)
+        Cumple 1FN, 2FN y 3FN los campos multivaluados se identificanpor una clave unica 
+
+        *Separamos la colunma materia y la comvertimos en una tabla 
+        --------------- alumnos ------------------
+        alumno_id       alumno          curso_id
+        1               Juanito         1
+        2               Pepito          2
+
+        ----------------- cursos -----------------------------
+        curso_id        nivel_curso         nombre_curso
+        1               Maestria            Data Engieering
+        2               Licenciatura        Programacion
+
+        -------- materias ----------
+        materia_id          materia
+        1                   MySQL
+        2                   Python
+
+        ------------ Materias_por_alumno --------------
+        mpa_id          materia_id          alumno_id
+        1               1                   1
+        2               2                   1
+        3               1                   2
+        4               2                   2
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+    Formas normales en Bases de Datos relacionales
+        La normalización en las bases de datos relacionales es uno de esos temas que, 
+        por un lado es sumamente importante y por el otro suena algo esotérico. 
+        Vamos a tratar de entender las formas normales (FN) de una manera simple para que puedas aplicarlas 
+        en tus proyectos profesionales.
+
+        Primera Forma Normal (1FN)
+            Esta FN nos ayuda a eliminar los valores repetidos y no atómicos dentro de una base de datos.
+
+            Formalmente, una tabla está en primera forma normal si:
+
+            - Todos los atributos son atómicos. Un atributo es atómico si los elementos del dominio son 
+            simples e indivisibles.
+            - No debe existir variación en el número de columnas.
+            - Los campos no clave deben identificarse por la clave (dependencia funcional).
+            - Debe existir una independencia del orden tanto de las filas como de las columnas; 
+            es decir, si los datos cambian de orden no deben cambiar sus significados.
+            
+            Se traduce básicamente a que si tenemos campos compuestos como por ejemplo “nombre_completo” 
+            que en realidad contiene varios datos distintos, en este caso podría ser “nombre”, 
+            “apellido_paterno”, “apellido_materno”, etc.
+
+            También debemos asegurarnos que las columnas son las mismas para todos los registros, 
+            que no haya registros con columnas de más o de menos.
+
+            Todos los campos que no se consideran clave deben depender de manera única por el o los campos 
+            que si son clave.
+
+            Los campos deben ser tales que si reordenamos los registros o reordenamos las columnas, 
+            cada dato no pierda el significado.
+
+        Segunda Forma Normal (2FN)
+        
+            Esta FN nos ayuda a diferenciar los datos en diversas entidades.
+
+            Formalmente, una tabla está en segunda forma normal si:
+
+            Está en 1FN
+            Sí los atributos que no forman parte de ninguna clave dependen de forma completa de la 
+            clave principal. Es decir, que no existen dependencias parciales.
+            Todos los atributos que no son clave principal deben depender únicamente de la clave principal.
+
+        Tercera Forma Normal (3FN)
+            
+            Esta FN nos ayuda a separar conceptualmente las entidades que no son dependientes.
+
+            Formalmente, una tabla está en tercera forma normal si:
+
+            Se encuentra en 2FN
+            No existe ninguna dependencia funcional transitiva en los atributos que no son clave
+
+            Esta FN se traduce en que aquellos datos que no pertenecen a la entidad deben tener 
+            una independencia de las demás y debe tener un campo clave propio.    
+
+        Cuarta Forma Normal (4FN)
+
+            Esta FN nos trata de atomizar los datos multivaluados de manera que no tengamos datos repetidos
+            entre rows.
+
+            Formalmente, una tabla está en cuarta forma normal si:
+
+            Se encuentra en 3FN
+            Los campos multivaluados se identifican por una clave única
+            Esta FN trata de eliminar registros duplicados en una entidad, es decir que cada registro 
+            tenga un contenido único y de necesitar repetir la data en los resultados se realiza a 
+            través de claves foráneas.
+
+        De esta manera, aunque parezca que la información se multiplicó, en realidad la descompusimos 
+        o normalizamos de manera que a un sistema le sea fácil de reconocer y mantener la consistencia 
+        de los datos.
+
+        Algunos autores precisan una 5FN que hace referencia a que después de realizar esta normalización 
+        a través de uniones (JOIN) permita regresar a la data original de la cual partió.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Sentencias DDL (Data Definition Language)
+    Create - Alter - Drop 
+
+    Estructuras 
+        Create (Database , Table, view)
+
+            Para crear una base de datos 
+                CREATE DATEBASE Nombre_base_datos; o CREATE SCHEMA Nombre_base_datos;
+
+            Para utilizar esta Base de datos por default     
+                USE DATEBASE Nombre_base_datos;
+             
+            Para crear una tabla 
+                CREATE TABLE 'Nombre_base_datos'. 'Nombre_tabla'(
+                    Dato_1 int,
+                    Dato_2 varchar (255)
+                );
+
+            Para crear VIEW 
+                CREATE VIEW v_nombre_vista AS 
+                SELECT * FROM  'Nombre_base_datos'. 'Nombre_tabla';
+
+        Alter (MODIFICAR)
+            Agregar otra atributo a la tabla
+                ALTER TABLE Nobre_base_datos . Nombre_tabla
+                ADD date_of_birth date; 
+
+            Cambiar el tipo de atributo      
+                ALTER TABLE Nobre_base_datos . Nombre_tabla
+                ALTER COLUMN date_of_birth year;
+
+            Borrar atributo de la tabla
+                ALTER TABLE Nobre_base_datos . Nombre_tabla
+                DROP COLUMN date_of_birth;
+
+        Drop (Soltar o Eliminar)
+            Eliminar Tabla
+                DROP TABLE Nombre_base_datos . Nombre_tabla;
+
+            Eliminar DATABASE o SCHEMA
+                Drop DATABASE Nobre_base_datos;  
+
+                Drop SCHEMA Nobre_base_datos; 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////            
+
+Sentencias DML (Data Manipulation Language) 
+    Insert - Update - Delete - Select  
+
+    Estructuras
+        Insert (insertar)
+            Inserta un nuevo registro o tupla a la base de datos        
+                
+                INSERT INTO Nombre_tabla (Nombre, Apellido, Edad)
+                VALUES ('Erick','Gonzalez','25');
+
+        UPDATE (Modificar)
+            Modifica los datos de una tabla en donde este seleccionado con el where 
+
+                UPDATE Nombre_tabla        
+                SET Nombre_atributo = 'Nuevo valor' , Nombre_atributo_2 = 'Nuevo valor'
+                WHERE id = #; 
+
+                UPDATE Nombre_tabla        
+                SET Apellido = 'Rojas' , Nombre = 'Nicolas'
+                WHERE id = 1;
+
+        DELETE (Eliminar)
+            Elimina el contenido de la tabla  
+
+                DELETE FROM Nombre_tabla
+                WHERE id = #;
+
+                DELETE FROM Nombre_tabla;
+
+        SELECT (Selecciona)
+            Trae informacion de la base de datos
+
+                SELECT nombre, apellido    
+                FROM Nombre_tabla
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Estructuras QUERY
+    son estructuras que se utilizan para crear preguntas
+
+        Estructura 
+            SELECT atributo,Nombre_atributo_2
+            From Nombre_tabla
+            Sentencias;
+
+        
+        Sentencias 
+            WHERE (Atributo = true)         -> Traiga un valor seleccionado 
+            GROUP BY (Atributo)             -> Permite agrupar por un criterio
+            ORDER BY (atributo) DESC        -> Permite ordenar de forma decendente
+            HAVING ATRIBUTO > #             -> Permite filtrar 
+            JOIN                            -> Une tablas como 2 conjuntos
+            INNER JOIN                      -> Trae los datos que esten asociados en las dos tablas
+            FULL OUTER JOIN                 -> Trae los datos que no estan asociadas en las dos tablas
+            LEFT JOIN                       -> Trae los registros que hay en el lado izquierdo sin 
+                                               importar que en el otro lado se encuentre null
+            RIGTH JOIN                      -> Trae los registros que hay en el lado Derecho sin 
+                                               importar que en el otro lado se encuentre null
+            UNION                         -> UNE dos SELECT
+
+        Funciones de SELECT
+
+            SELECT Nombre_atributo AS Nuevo_nombre      -> Cambia el nombre del atributo
+            SELECT *                                    -> Muestra todos los valores de los atributos
+            SELECT COUNT (*)                            -> Cuenta todos los valores y muestra el 
+                                                           resultado al final
+            SELECT COUNT (*) AS numero_resultados       -> Cuenta todos los valores y muestra el 
+                                                           resultado al final
+
+        Funciones de FROM
+
+            SELECT *
+            FROM tabla_1
+                LEFT JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id;    -> Une la tabla_1 con tabla_FK 
+                                                                            usando la llave primaria 
+                                                                            de la tabla 1 (tabla_1.id) 
+                                                                            que es igual a la llave foranea 
+                                                                            de la tabla FK (tabla_FK.tabla1_id)    
+
+            SELECT *
+            FROM tabla_1
+                LEFT JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id
+                WHERE tabla_FK.tabla1_id IS NULL;                            -> Trae los registros de la 
+                                                                                tabla tabla_1 en que 
+                                                                                registros de la tabla 
+                                                                                tabla_FK sean NULL
+
+                                                                                
+            SELECT *
+            FROM tabla_1
+                RIGTH JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id;    -> Une la tabla_FK con tabla_1 
+                                                                            usando la llave primaria 
+                                                                            de la tabla 1 (tabla_1.id) 
+                                                                            que es igual a la llave foranea 
+                                                                            de la tabla FK (tabla_FK.tabla1_id)
+
+
+            SELECT *
+            FROM tabla_1
+                RIGTH JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id
+                WHERE tabla_FK.tabla1_id IS NULL;                            -> Trae los registros de la 
+                                                                                tabla tabla_FK en que los 
+                                                                                registros de la tabla 
+                                                                                tabla_1 sean NULL
+
+
+            SELECT *
+            FROM tabla_1
+                INNER JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id;      -> Trae solamente los registros 
+                                                                               que estan ligados (Los registros
+                                                                               que no tienen NULL en ninguno de los
+                                                                               dos lados)
+
+                
+            SELECT *
+            FROM tabla_1
+                LEFT JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id    
+            UNION
+            SELECT *
+            FROM tabla_1
+                RIGTH JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id;     -> Trae todos los registros de 
+                                                                               las dos tablas sin importar
+                                                                               que sean NULL en almenos 
+                                                                               una tabla
+
+
+            SELECT *
+            FROM tabla_1
+                LEFT JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id  
+            HERE tabla_FK.tabla1_id IS NULL      
+            UNION
+            SELECT *
+            FROM tabla_1
+                RIGTH JOIN tabla_FK ON tabla_1.id = tabla_FK.tabla1_id
+            HERE tabla_FK.tabla1_id IS NULL;                                -> Trae los registros que son 
+                                                                               NULL en almenos una tabla                                                                        
+
+        Funciones de WHERE
+                                                                                
