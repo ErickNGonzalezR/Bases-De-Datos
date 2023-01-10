@@ -359,7 +359,9 @@ Estructuras QUERY
         Funciones de SELECT
 
             SELECT Nombre_atributo AS Nuevo_nombre      -> Cambia el nombre del atributo
+            
             SELECT *                                    -> Muestra todos los valores de los atributos
+            
             SELECT COUNT (*)                            -> Cuenta todos los valores y muestra el 
                                                            resultado al final
             SELECT COUNT (*) AS numero_resultados       -> Cuenta todos los valores y muestra el 
@@ -434,4 +436,82 @@ Estructuras QUERY
                                                                                NULL en almenos una tabla                                                                        
 
         Funciones de WHERE
-                                                                                
+            Ayuda a filtrar que tupla oregistro necesitamos     
+
+                SELECT *
+                FROM tabla_1
+                WHERE id < 50;                                      -> Trae todos los registros id que sean 
+                                                                       menores que 50 
+                                                                    
+                SELECT *
+                FROM tabla_1
+                WHERE id = 50;                                      -> Trae todos los registros id que sean 
+                                                                       iguales que 50
+
+                SELECT *
+                FROM tabla_1
+                WHERE datos LIKE '%50%';                            -> Trae todos los registros datos que 
+                                                                       tengan el numero 50 en medio
+
+                SELECT *
+                FROM tabla_1
+                WHERE datos LIKE '50%';                             -> Trae todos los registros datos que 
+                                                                       tengan el numero 50 en el comienzo        
+                                                
+                SELECT *
+                FROM tabla_1
+                WHERE datos LIKE '%50';                             -> Trae todos los registros datos que 
+                                                                       tengan el numero 50 al final
+
+                SELECT *
+                FROM tabla_1
+                WHERE fecha < '2025-01-01';                         -> Trae todos los registros id que sean
+                                                                       menores a la fecha 2025-01-01
+
+                SELECT *
+                FROM tabla_1
+                WHERE fecha BETWEEN '2021-01-01' AND '2025-01-01';  -> Trae todos los registros que la 
+                                                                       fecha este entre '2021-01-01' y 
+                                                                       '2025-01-01'          
+
+                SELECT *
+                FROM tabla_1
+                WHERE YEAR(fecha) BETWEEN '2021' AND '2025';        -> Trae todos los registros que la 
+                                                                       fecha este entre 2021 y 2025
+
+                SELECT *
+                FROM tabla_1
+                WHERE MONTH(fecha) 04;                              -> Trae todos los registros que  
+                                                                       en el mes 04
+
+                SELECT *
+                FROM tabla_1
+                WHERE fecha IS NULL;                                  -> Trae todos los registros que sean
+                                                                         esten vacios o sean null   
+                                                                         
+                SELECT *
+                FROM tabla_1
+                WHERE fecha IS NOT NULL;                                -> Trae todos los registros que no
+                                                                           esten vacios o no sean null
+
+                SELECT *
+                FROM tabla_1
+                WHERE fecha IS NOT NULL;                                
+                    AND id = 50                                         -> Trae todos los registros que no
+                                                                           esten vacios o no sean null y que 
+                                                                           su id sea 50                                                                                                                                                                           
+
+                SELECT *
+                FROM tabla_1
+                WHERE fecha IS NOT NULL;                                
+                    AND estatus = 'activo'
+                    AND id = 50                                         -> Trae todos los registros que no
+                                                                           esten vacios o no sean null y 
+                                                                           que este activo y que su id sea 50 
+
+        Funciones de GROUP BY
+            Agrupar por 
+
+                
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                                                                                                      
