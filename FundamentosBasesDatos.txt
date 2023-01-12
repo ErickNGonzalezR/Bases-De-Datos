@@ -85,7 +85,7 @@ Constrains (Restricciones)
     DEFAULT                 Coloca un valor por defecto cuando no hay un valor especificado
     INDEX                   Se crea por columna para permitir busquedas mas rapidas 
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
 
 Normalizacion
     Primera forma normal (1FN)
@@ -175,7 +175,7 @@ Normalizacion
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-    Formas normales en Bases de Datos relacionales
+Formas normales en Bases de Datos relacionales
         La normalización en las bases de datos relacionales es uno de esos temas que, 
         por un lado es sumamente importante y por el otro suena algo esotérico. 
         Vamos a tratar de entender las formas normales (FN) de una manera simple para que puedas aplicarlas 
@@ -294,6 +294,7 @@ Sentencias DDL (Data Definition Language)
                 Drop DATABASE Nobre_base_datos;  
 
                 Drop SCHEMA Nobre_base_datos; 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////            
 
 Sentencias DML (Data Manipulation Language) 
@@ -331,7 +332,7 @@ Sentencias DML (Data Manipulation Language)
                 SELECT nombre, apellido    
                 FROM Nombre_tabla
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Estructuras QUERY
     son estructuras que se utilizan para crear preguntas
@@ -340,7 +341,6 @@ Estructuras QUERY
             SELECT atributo,Nombre_atributo_2
             From Nombre_tabla
             Sentencias;
-
         
         Sentencias 
             WHERE (Atributo = true)         -> Traiga un valor seleccionado 
@@ -354,7 +354,8 @@ Estructuras QUERY
                                                importar que en el otro lado se encuentre null
             RIGTH JOIN                      -> Trae los registros que hay en el lado Derecho sin 
                                                importar que en el otro lado se encuentre null
-            UNION                         -> UNE dos SELECT
+            UNION                           -> UNE dos SELECT
+            SUM(atibuto)                    -> Suma valores 
 
         Funciones de SELECT
 
@@ -512,6 +513,87 @@ Estructuras QUERY
         Funciones de GROUP BY
             Agrupar por 
 
+                SELECT Nombre_atributo, COUNT(*) cantidad_registros_atributo 
+                FROM Nombre_tabla
+                GROUP BY estatus;                                               -> Muestra la cantidad de 
+                                                                                   registros que estan 
+                                                                                   inactivos y activos
+
+                SELECT SUM (gastos) Suma_gastos 
+                FROM Nombre_tabla
+                GROUP BY mes;                                                   -> Muestra la suma de los 
+                                                                                   registros que estan en 
+                                                                                   la columna gastos y los
+                                                                                   agrupa por mes  
+
+                SELECT YEAR(fecha) AS fecha_, COUNT(*) AS fecha_cantidad
+                FROM Nombre_tabla
+                GROUP BY fecha_;                                               -> Muestra la cantidad de 
+                                                                                   registros que estan 
+                                                                                   en fecha_  
+
+                SELECT MONTHNAME(fecha) AS fecha_MONTH, COUNT(*) AS fecha_cantidad
+                FROM Nombre_tabla
+                GROUP BY fecha_MONTH;                                               -> Muestra la cantidad de 
+                                                                                   registros que se hicieron
+                                                                                   en los 12 meses                                                                  
+                                                                                    
+                SELECT estatus, MONTHNAME(fecha) AS fecha_MONTH, COUNT(*) AS fecha_cantidad
+                FROM Nombre_tabla
+                GROUP BY estatus,fecha_MONTH;                                   -> Muestra la cantidad de 
+                                                                                   registros activos y 
+                                                                                   inactivos que se hicieron
+                                                                                   en los 12 meses       
+
+        Funciones de ORDER BY y HAVING 
+            Ordena por 
+
+                SELECT *
+                FROM Nombre_tabla
+                ORDER BY fecha ASC;                           -> Ordena de forma ascendente los registros
+
+                SELECT *
+                FROM Nombre_tabla
+                ORDER BY fecha DESC;                          -> Ordena de forma descendente los registros 
                 
+                SELECT *
+                FROM Nombre_tabla
+                ORDER BY Nombre ASC;                          -> Ordena de forma alfabetica ascendente
+                                                                 los registros cuando son cadenas 
+
+                SELECT *
+                FROM Nombre_tabla
+                ORDER BY Nombre DESC;                         -> Ordena de forma alfabetica descendente
+                                                                 los registros cuando son cadenas
+
+                SELECT *
+                FROM Nombre_tabla
+                ORDER BY id ASC;                              -> Ordena de forma ascendente los registros  
+
+                SELECT *
+                FROM Nombre_tabla
+                ORDER BY id DESC;                             -> Ordena de forma descendente los registros 
+
+                SELECT *
+                FROM Nombre_tabla
+                ORDER BY id ASC
+                LIMIT 5;                                      -> Ordena de forma ascendente los registros y Trae    
+                                                                 los primeros 5 registros 
+
+                SELECT MONTHNAME(fecha) AS nombre_mes, COUNT(*) cantidad_registros_atributo 
+                FROM Nombre_tabla
+                GROUP BY estatus
+                HAVING cantidad_registros_atributo > 1
+                ORDER BY nombre_mes;                          -> Muestra la cantidad de registros que estan 
+                                                                 inactivos y activos y que sean mayor a 1                                                
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////                                                                                                                      
+
+De pregunata a Query 
+    - Lo que quieres Mostrar                                        = SELECT
+    - De donde voy a tomar los datos                                = FROM
+    - Los rubros por los que me interesa agrupar la informacion     = GROUP BY
+    - El orden en que quiero presentar mi informacion               = ORDER BY
+    - Los filtros que quiero que mis datos agupados tengan          = HAVING 
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
