@@ -595,5 +595,3 @@ De pregunata a Query
     - Los rubros por los que me interesa agrupar la informacion     = GROUP BY
     - El orden en que quiero presentar mi informacion               = ORDER BY
     - Los filtros que quiero que mis datos agupados tengan          = HAVING 
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
