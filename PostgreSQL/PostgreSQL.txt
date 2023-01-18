@@ -351,3 +351,167 @@ Tipos de datos
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Jerarquía de Bases de Datos
+
+    Toda jerarquía de base de datos se basa en los siguientes elementos:
+
+        Servidor de base de datos: Computador que tiene un motor de base de datos instalado y en ejecución.
+
+        Motor de base de datos: Software que provee un conjunto de servicios encargados de administrar 
+                                una base de datos.
+
+        Base de datos: Grupo de datos que pertenecen a un mismo contexto.
+
+        Esquemas de base de datos en PostgreSQL: Grupo de objetos de base de datos que guarda relación  
+                                                entre sí (tablas, funciones, relaciones, secuencias).
+
+        Tablas de base de datos: Estructura que organiza los datos en filas y columnas formando una matriz.
+
+    PostgreSQL es un motor de base de datos.
+
+        La estructura de la base de datos diseñada para el reto corresponde a los siguientes
+        elementos:
+
+            La base de datos se llama transporte, usaremos su esquema predeterminado public.
+
+                El esquema public contiene las siguientes tablas:
+
+                    - Estación: Contiene la información de las estaciones de nuestro sistema, incluye 
+                                datos de nombre con tipo de dato texto y dirección con tipo de dato 
+                                texto, junto con un número de identificación único por estación. 
+
+                    - Pasajero: Es la tabla que contiene la información de las personas que viajan en 
+                                nuestro sistema de transporte masivo, sus columnas son nombre tipo de 
+                                dato texto con el nombre completo de la persona, direccion_residencia 
+                                con tipo de dato texto que indica dónde vive la persona, fecha_nacimiento 
+                                tipo de dato texto y un ID único tipo de dato numérico para identificar a 
+                                cada persona.
+
+                    - Tren:     Almacena la información de los trenes de nuestro sistema, cada tren 
+                                tiene un modelo con tipo de dato texto y una capacidad con tipo de 
+                                dato numérico que representa la cantidad de personas que puede llevar 
+                                ese tren, también tiene un ID único por tren.
+
+                Y las tablas de relaciones entre cada uno de los elementos anteriores son:
+
+                    - Trayecto: Relaciona los trenes con las estaciones, simula ser las rutas que cada 
+                                uno de los trenes pueden desarrollar entre las estaciones
+
+                    - Viaje:    Relaciona Trayecto con Pasajero ilustrando la dinámica entre los viajes 
+                                que realizan las personas, los cuales parten de una estación y se hacen 
+                                usando un tren.
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Acciones
+    CREATE  -> Sirve para inicializar una sin ningun tipo de dato
+    ALTER   -> Sirve para agregar columnas o eliminar columnas cambiar indices 
+    DROP    -> Permite crear una tabla
+    
+    Create (Database , Table, view)
+
+            Para crear una base de datos 
+                CREATE DATEBASE Nombre_base_datos; o CREATE SCHEMA Nombre_base_datos;
+
+            Para utilizar esta Base de datos por default     
+                USE DATEBASE Nombre_base_datos;
+             
+            Para crear una tabla 
+                CREATE TABLE 'Nombre_base_datos'. 'Nombre_tabla'(
+                    Dato_1 int,
+                    Dato_2 varchar (255)
+                );
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Particiones
+    - Consiste en una separacion fisica de datos 
+    - Estructura logica 
+    
+    Simulacion de creacion
+        - Se crea una nueva tabla 
+
+        - cambiamos en general Partioned table? a yes 
+
+        - Agregamos campos normales sin primary key ya que nos es posible crear particiones con una primary key 
+        
+        - Vamos a pa pestaña particion y elegimos el tipo de particion
+
+        - Agregamos la llave por la cual vamos a hacer la particion (Partition key)
+
+        - Luego de haberla creado hacemos 
+            CREATE TABLE nombreDeLaTablaParticionDato PARTITION nombreDeLaTablaParticion 
+            FOR VALUES FROM ('datos') to ('datos');
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Roles 
+    Pueden 
+        - Crear y eliminar
+        - Asignar atributos
+        - Agrupar con otros roles
+        - Roles predeterminados
+
+    Para saber que caracteristicas tiene cada rol por consola
+    \h CREATE ROLE    
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+Caracteristicas de los roles
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Creacion, Edicion, eliminacion de roles por consola
+
+    CREAR ROLES 
+        CREATE ROLE nombredeusuario
+        WITH caracteristicas;
+    -----------------------------------------------------------------------------------------------------------------
+
+    Crear contraseña en un rol 
+        CREATE ROLE nombredeusuario
+        WITH LOGIN;
+        
+        ALTER ROLE nombredeusuario LOGIN PASSWORD 'contraseña' ;
+    -------------------------------------------------------------------------------------------------------------------
+
+    Modificar roles
+        ALTER ROLE nombredeusuario
+        WITH caracteristicas;
+    -------------------------------------------------------------------------------------------------------------------
+    Borrar usuario     
+
+        DROP ROLE nombredeusuario;
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Creacion de roles por PgAdmin
+    Buscamos Login/Grup Role
+        - click derecho Create 
+        - Login/Grup Role
+            General 
+                - En Name (Usuario)
+                - En Comments (escribimos lo que hace el usuario)   opcional
+            Definition 
+                - En Password (contraseña)
+                
+            Privilegies (podemos ver todos los atributos)
+                - Cambiamos cada una de las opciones que el usuario puede hacer
+
+            Membership
+                - Si hemos creado un grupo de permisos podemos asigmarlo para el usuario 
+
+            Parameters
+                - Podemos caracterizar variables y atributos en la base de datos 
+
+    Buscamos Tables
+        - Click derecho
+        - Grand Wizard 
+            Pregunta que tablas queremos afectar 
+            - Next
+                - Seleccionamos los permisos que le amos a dar al Usuario
+                    - Hacemos click en el +
+                    - Grantee (seleccionamos el usuario al que le vamos a dar los permisos)
+                    - Privileges (Seleccionamos los privilegios)
+                    Finish
+
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+Para saber el formato de del dato date 
+    SELECT current_date;
