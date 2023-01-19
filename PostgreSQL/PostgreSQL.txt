@@ -4,7 +4,7 @@ Que es Postgres
     - Objeto-Relacional
     - Usa SQL
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Instalación y configuración
     Vamos a instalar PostgreSQL en nuestra computadora. A continuación veremos el paso a paso y algunos 
@@ -164,7 +164,7 @@ Instalación y configuración
         Con ello, si el elemento “transporte_publico” desaparece del menú de la izquierda 
         comprobamos que PgAdmin funcionan correctamente.
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Como conecterse a la base de datos desde la consola 
 
@@ -284,7 +284,7 @@ Comandos de Postgres
             nos permite medir el tiempo que tarda una consulta 
                 \timing
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Archivos de configuracion
     Para emcontrarlos 
@@ -296,7 +296,7 @@ Archivos de configuracion
     - pg_hba.conf       -> Muestra los roles y tipos de acceso que tienen las bases de datos
     - pg_ident.conf     -> Permite a que usuario tiene cada rol  
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////    
 
 Tipos de datos 
     https://www.todopostgresql.com/postgresql-data-types-los-tipos-de-datos-mas-utilizados/
@@ -349,7 +349,7 @@ Tipos de datos
     uuid	 	                                                        universally unique identifier
     xml	 	                                                            XML data
 
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Jerarquía de Bases de Datos
 
@@ -401,7 +401,7 @@ Jerarquía de Bases de Datos
                                 que realizan las personas, los cuales parten de una estación y se hacen 
                                 usando un tren.
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Acciones
     CREATE  -> Sirve para inicializar una sin ningun tipo de dato
@@ -421,7 +421,7 @@ Acciones
                     Dato_1 int,
                     Dato_2 varchar (255)
                 );
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Particiones
     - Consiste en una separacion fisica de datos 
@@ -442,7 +442,7 @@ Particiones
             CREATE TABLE nombreDeLaTablaParticionDato PARTITION nombreDeLaTablaParticion 
             FOR VALUES FROM ('datos') to ('datos');
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Roles 
     Pueden 
@@ -454,9 +454,89 @@ Roles
     Para saber que caracteristicas tiene cada rol por consola
     \h CREATE ROLE    
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////    
+
 Caracteristicas de los roles
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+    Rol de solo lectura
+        El primer paso consiste en crear un nuevo rol denominado readonly mediante la siguiente 
+        instrucción SQL:
+            CREATE ROLE readonly;
+
+        Este es un rol simple sin permisos ni contraseña. No se puede utilizar para iniciar 
+        sesión en la base de datos.
+        
+        Conceda permiso a este rol para conectarse a la base de datos de destino denominada 
+        “mydatabase”:
+           GRANT CONNECT ON DATABASE mydatabase TO readonly;
+
+        El siguiente paso es otorgar acceso al uso de este rol a su esquema. Supongamos que 
+        el esquema se llama myschema:
+            GRANT USAGE ON SCHEMA myschema TO readonly;
+
+        En este paso se concede permiso de rol de readonly para realizar alguna actividad 
+        dentro del esquema. Sin este paso, el rol readonly no puede realizar ninguna acción 
+        en los objetos de este esquema, incluso si se han concedido permisos para esos objetos.
+
+        El siguiente paso consiste en otorgar acceso al rol readonly para ejecutar las consultas 
+        en las tablas requeridas.
+            GRANT SELECT ON TABLE mytable1, mytable2 TO readonly;
+
+        Si el requisito es conceder acceso a todas las tablas y vistas del esquema, puede 
+        utilizar el siguiente SQL:
+            GRANT SELECT ON ALL TABLES IN SCHEMA myschema TO readonly;
+
+        La instrucción SQL anterior otorga acceso SELECT al rol de solo lectura en todas las 
+        tablas y vistas existentes en el esquema llamado myschema. Tenga en cuenta que el 
+        usuario readonly no podrá acceder a las tablas nuevas que se añadan en el futuro. 
+        Para garantizar que también se pueda acceder a nuevas tablas y vistas, ejecute la 
+        siguiente instrucción para conceder permisos automáticamente:
+            ALTER DEFAULT PRIVILEGES IN SCHEMA myschema GRANT SELECT ON TABLES TO readonly;
+
+        
+
+    Rol de lectura y escritura
+        El proceso de agregar un rol de lectura/escritura es muy similar al proceso de rol
+        de solo lectura que se trató anteriormente. El primer paso es crear un rol:
+            CREATE ROLE readwrite;
+
+        Conceda permiso a este rol para conectarse a la base de datos de destino:
+            GRANT CONNECT ON DATABASE mydatabase TO readwrite;
+
+        Conceda privilegio de uso de esquemas:
+            GRANT USAGE ON SCHEMA myschema TO readwrite;
+
+        Si desea permitir que este rol cree nuevos objetos como tablas de este esquema, 
+        utilice el siguiente SQL en lugar del anterior:
+            GRANT USAGE, CREATE ON SCHEMA myschema TO readwrite;
+
+        El siguiente paso es conceder acceso a las tablas. Como se mencionó en la sección 
+        anterior, la concesión puede realizarse en tablas individuales o en todas las 
+        tablas del esquema. Para tablas individuales, utilice el siguiente SQL:
+            GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE mytable1, mytable2 TO readwrite;
+
+        Para todas las tablas y vistas del esquema, utilice el siguiente SQL:
+            GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA myschema TO readwrite;
+
+        Para conceder automáticamente permisos sobre tablas y vistas añadidas en el futuro:
+            ALTER DEFAULT PRIVILEGES IN SCHEMA myschema GRANT SELECT, INSERT, UPDATE, 
+            DELETE ON TABLES TO readwrite;
+
+        Para los roles de lectura y escritura, normalmente existe el requisito de utilizar secuencias 
+        también. Puede dar acceso selectivo de la siguiente manera:
+            GRANT USAGE ON SEQUENCE myseq1, myseq2 TO readwrite;
+
+        También puede conceder permiso a todas las secuencias mediante la siguiente instrucción SQL:
+            GRANT USAGE ON ALL SEQUENCES IN SCHEMA myschema TO readwrite;
+
+        Para conceder permisos automáticamente a las secuencias añadidas en el futuro:
+            ALTER DEFAULT PRIVILEGES IN SCHEMA myschema GRANT USAGE ON SEQUENCES TO readwrite;
+
+        Puede conceder más o menos permisos en función de los requisitos. La documentación 
+        del comando GRANT de PostgreSQL proporciona más detalles sobre los objetos en 
+        los que se pueden conceder permisos y las sentencias SQL necesarias.
+
+        
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Creacion, Edicion, eliminacion de roles por consola
 
@@ -480,19 +560,19 @@ Creacion, Edicion, eliminacion de roles por consola
 
         DROP ROLE nombredeusuario;
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Creacion de roles por PgAdmin
     Buscamos Login/Grup Role
         - click derecho Create 
         - Login/Grup Role
             General 
-                - En Name (Usuario)
-                - En Comments (escribimos lo que hace el usuario)   opcional
+                - En Name       (Usuario)
+                - En Comments   (escribimos lo que hace el usuario)   opcional
             Definition 
-                - En Password (contraseña)
+                - En Password   (contraseña)
                 
-            Privilegies (podemos ver todos los atributos)
+            Privilegies         (podemos ver todos los atributos)
                 - Cambiamos cada una de las opciones que el usuario puede hacer
 
             Membership
@@ -508,10 +588,199 @@ Creacion de roles por PgAdmin
             - Next
                 - Seleccionamos los permisos que le amos a dar al Usuario
                     - Hacemos click en el +
-                    - Grantee (seleccionamos el usuario al que le vamos a dar los permisos)
+                    - Grantee   (seleccionamos el usuario al que le vamos a dar los permisos)
                     - Privileges (Seleccionamos los privilegios)
                     Finish
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Llaves foraneas
+    Tiene
+        - Tabla origen 
+        - Tabla destino
+        - Acciones
+
+    - Buscamos la tabla a la cual queremos insertar una tabla foraneas
+    - Click derecho propiedades 
+        - Constraints
+            - Foreign key 
+            - Seleccionamos +
+            - Name (nombreTablaOrigen_NombreTablaDestino_fkey)
+            - Add new 
+                - General 
+                     Name ()
+                - Definition (Podemos agregar caracterristicas especiales para validacion de Backup)
+                    - Deferrable            -> Podemos aplazar
+                    - Deferred              -> Apenas la creemos no se va a validar 
+                    - Match type            -> Que la comparacion entre comunas va ha ser de valor 
+                                               a valor (simple), si tenemos otro valor tiene que ser compleja (full)
+                    - Validated             -> Que tenemos que iniciar las tablas con la validacion   
+                - Columns
+                    - Local column  (es la columna a la cual estamos haciendo referencia)
+                    - References    (La tabla a la cual esta haciendo referencia)
+                    - Referencing   (la columla de la tabla a la cual esta haciendo referencia)
+                - Action (que tiene que hacer la base de datos cuando ocurre un cambio)
+                    - On update (Se actualiza)
+                        - NO ACTION     -> No hace nada
+                        - RESTRICT      -> Que la tabla no pueda hacer cambios
+                        - CASCADE       -> Si cambia la tabla de origen la tabla destino tambien cambia 
+                        - SET NULL      -> Cambia la informacion que teniamos por null 
+                        - SET DEFAULT   -> La tabla toma un vlor predeterminado
+                    - On delete (Se borra)
+                        - NO ACTION     ->
+                        - RESTRICT      ->
+                        - CASCADE       ->
+                        - SET NULL      ->
+                        - SET DEFAULT   ->
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Insertar datos
+    INSERT INTO public.nombreTabla(
+        CombreColumna1, nombrecolumna2)
+        VALUES (valorColumna1 , 'valorColumna2');
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Actualizamos datos 
+    UPDATE public.nombreTabla
+        SET CombreColumna1 = valorCambiado, nombrecolumna2=ValorCambiado)
+        Set id = 1
+        WHERE (condicion) id = 2;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Borrar datos 
+    DELETE FROM public.nombreTabla
+    WHERE (condicion) id = 1 ;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Cruzar tablas 
+    Tipos de JOIN
+        - JOIN (INNER)      ->  Permite consultar la interseccion
+        - LEFT [OUTER]      ->  Permite consultar la izquierda
+        - RIGTH [OUTER]     ->  Permite consultar la derecha 
+        - FULL OUTER        ->  Permite consultar todo 
+        https://upload.wikimedia.org/wikipedia/commons/c/c9/Joins_del_SQL.svg
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Funciones especiales principales 
+    - ON CONFLICT DO    -> Nos ayuda cuando queremos insertar o modificar datos que no podamos
+        - Si queremos reemplar la el valor de una columna y hay un conflicto
+            INSERT TO public.nombreTabla(
+            nombreColumna1, nombrecolumna2)
+            Values (valorColumna1, valorColumna2)
+            ON CONFLICT (NombreColumnaConflicto) DO UPDATE SET nombrecolumna2 = valorColumna2;
+
+        - Si no queremos reemplazar los datos de la columna     
+            INSERT TO public.nombreTabla(
+            nombreColumna1, nombrecolumna2)
+            Values (valorColumna1, valorColumna2)
+            ON CONFLICT (NombreColumnaConflicto) DO NOTHING;
+
+    - RETURNING         -> Devuelve todos los cambios que hemos hecho sobre la base de datos
+        - Si queremos poder ver lo que acabanos de insertar
+            INSERT TO public.nombreTabla(
+            nombreColumna1, nombrecolumna2)
+            Values (valorColumna1, valorColumna2)
+            RETURING *;
+
+    - LIKE / ILIKE      -> Permite hacer busquedas
+        - LIKE  -> Tiene en cuenta las mayusculas
+        - ILIKE -> No tiene en cuenta las mayuculas o las minusculas
+        - Si un registro comienza con o 
+            SELECT nombreColumna
+                FROM public.nombreTabla
+                WHERE nombreColumna LIKE 'o%';
+                
+    - IS / IS NOT       -> permite comparar 2 datos 
+        - Que registros son NULL 
+            SELECT nombreColumna
+                FROM public.nombreTabla
+                WHERE nombreColumna IS NULL;
+
+        - Que registros son NOT NULL 
+            SELECT nombreColumna
+                FROM public.nombreTabla
+                WHERE nombreColumna IS NOT NULL;        
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Funciones especiales avanzadas
+    - COALESCE              -> Permite comparar 2 valores y retormar cual de los 2 no es NULL
+        - Si el dato con id = 1 en nombreColumna1 es NULL se colocara no aplica
+            SELECT id COALESE (nombreColumna1, no aplica) AS nombreColumna1 , nombrecolumna2
+                    FROM public.nombreTabla
+                    WHERE id = 1;
+
+    - NULLIF                -> Permite comparar 2 valores y retornar NULL si son iguales
+
+            SELECT NULLIF (0,0);
+
+    - GREATEST              -> Permite comparar un areglo de valores y retorna el mayor
+
+            SELECT GREATEST (1,32,2,23,21,11,123);
+
+    - LEAST                 -> Permite comparar un areglo de valores y retorna el menor 
+
+            SELECT LEAST (1,32,2,23,21,11,123);
+
+    - BLOQUES ANONIMOS      -> Permite ingresar condicionales pero dentro de una consulta de 
+                               base de datos 
+            
+            SELECT id COALESE (nombreColumna1, no aplica) AS nombreColumna1 , nombrecolumna2 , fecha_nacimiento
+                    CASE 
+                    WHERE fecha_nacimiento > '2015-01-01' THEN
+                    'niño'
+                    ELSE 
+                    'Mayor'
+                    END
+                    FROM public.nombreTabla;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Vistas 
+    - Volatil                       -> Siempre que se haga la consulta la base de datos va a hacer 
+                                       la ejecucion de la consulta en la base de datos por lo cual 
+                                       siempre va ha tener informacion reciente
+    - Materializada: Persistente    -> solamente hace la consulta una vez y la informacion queda 
+                                       guardada en memoria la siguiente vez que consultes la va ha 
+                                       traer de memoria (si no actualiza la vista podra traer datos 
+                                       viejos o inservibles)
+
+    Creacion Vista Volatil
+        - Buscamos views
+        - Click derecho -> Create -> view
+            - General
+                - Name (NombreVista)
+            - code 
+                - Copiamos lo que queramos que sea la vista
+
+        Consultarla
+            SELECT * FROM NombreVista;
+
+    Creacion vista Materializada
+        - Buscamos Materialized views 
+        - click derecho -> Create -> Materialized view 
+            - General
+                - Name (NombreVista_mview)
+            - Definition
+                - Copiamos la consulta 
+            - Storage
+                - With data                 -> Si queremos llenar la vista cuando la estamos creando o no
+
+        Para llenarla de datos 
+            REFRESH MATERIALIZED VIEW NombreVista_mview;
+            
+        Consultarla 
+            SELECT * FROM NombreVista_mview;
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Para saber el formato de del dato date 
     SELECT current_date;
+
+Para crear datos aleatorios 
+    https://mockaroo.com
