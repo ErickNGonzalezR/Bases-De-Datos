@@ -779,6 +779,102 @@ Vistas
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+PL/SQL 
+    PL (Procedimientos almacenados)
+
+    Estructura Basica
+        [<<>label>>]
+        [DECLARE
+            declarations]
+        BEGIN
+            statements
+        END[label];
+
+    - Muestra un mensaje en consola 
+        DO $$
+        BEGIN
+            RAISE NOTICE 'Algo esta pasando';
+        END
+        $$
+
+    - Declaramos una variable
+        DO $$
+        DECLARE
+        rec recor;
+        contador integer := 0;
+        BEGIN
+        FOR rec IIN SLECT * FROM nombreTabla LOOP
+            rec.nombreColumna
+            RAISE NOTICE 'El dato de la variable es %', rec.nombreColumna;
+            contador := contadro + 1;
+        END LOOP;
+        RAISE NOTICE 'El contero es %', contador;
+        END
+        $$
+
+    Funciones Estructura
+        CREATE OR REPLACE FUNCTION nombreFuncion()
+        RETURN TipoDatoOVoid
+        AS 
+            statements
+        LANGUAGE lenguaje;
+    
+    Ejemplo
+        CREATE OR REPLACE FUNCTION nombreFuncion 
+        RETURN integer
+        AS $$
+        DECLARE
+        rec recor;
+        contador integer := 0;
+        BEGIN
+        FOR rec IIN SLECT * FROM nombreTabla LOOP
+            rec.nombreColumna
+            RAISE NOTICE 'El dato de la variable es %', rec.nombreColumna;
+            contador := contadro + 1;
+        END LOOP;
+        RAISE NOTICE 'El contero es %', contador;
+        RETURN contador;
+        END
+        $$
+        LANGUAGE PLPGSQL;
+
+
+    Tipos de datos 
+        record      -> Permite almacenar datos de una fila 
+
+    Para inicializar una variable 
+        variable tipoVar := valores  
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Creacion de funciones en PgAdmin
+    - Buscamos funciones
+    - Click derecho -> Create -> Function 
+        - General
+            - Name (nombreFuncion)
+        - Definition
+            - Return type   (cambiamos el valor de retorno)
+            - Lenguaje      (Cambiamos al lenguaje que estamos utilizando)
+        - Code
+            - Colocamos el bloque de codigo que queremos insertar
+        - Options
+            - Volatility                -> Mantener ne cache la funcion 
+            - Returns a set             -> Retorna un areglo de datos
+            - Strict                    -> Si la PL esta verificando que los parametros no vengan NULL
+            - Security of Defender      -> Si solamete lo pueda ejecutar el creador
+            -Window                     -> si lo ejecutamos en un hilo aparte 
+            - 
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Triggers 
+    Tambien conocidos como "Disparadores"
+        Permiten ejecutar funciones dependiendo de acciones que se ejecuten sobre una tabla 
+        (Insert - Update - Delete) 
+
+        
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Para saber el formato de del dato date 
     SELECT current_date;
 
