@@ -421,6 +421,7 @@ Acciones
                     Dato_1 int,
                     Dato_2 varchar (255)
                 );
+
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Particiones
@@ -534,8 +535,7 @@ Caracteristicas de los roles
         Puede conceder más o menos permisos en función de los requisitos. La documentación 
         del comando GRANT de PostgreSQL proporciona más detalles sobre los objetos en 
         los que se pueden conceder permisos y las sentencias SQL necesarias.
-
-        
+       
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Creacion, Edicion, eliminacion de roles por consola
@@ -827,7 +827,7 @@ PL/SQL
         rec recor;
         contador integer := 0;
         BEGIN
-        FOR rec IIN SLECT * FROM nombreTabla LOOP
+        FOR rec IN SLECT * FROM nombreTabla LOOP
             rec.nombreColumna
             RAISE NOTICE 'El dato de la variable es %', rec.nombreColumna;
             contador := contadro + 1;
@@ -864,17 +864,181 @@ Creacion de funciones en PgAdmin
             - Security of Defender      -> Si solamete lo pueda ejecutar el creador
             -Window                     -> si lo ejecutamos en un hilo aparte 
             - 
+
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 Triggers 
     Tambien conocidos como "Disparadores"
-        Permiten ejecutar funciones dependiendo de acciones que se ejecuten sobre una tabla 
-        (Insert - Update - Delete) 
+        Permiten ejecutar funciones dependiendo de acciones que se ejecuten sobre una tabla cuando pasan 
+        una de estas acciones (Insert - Update - Delete) 
+    
+    - Creacion de bitacora 
+        - Creamos una tabla (total - integer , tiempo - time , id - serial)
+        - Modifucamos la pl 
+            
+            INSERT INTO Nombre_tabla (valores de las columnas)
+            VALUES (valores)
 
-        
+    - Ejemplo 
+        CREATE OR REPLACE FUNCTION nombreFuncion 
+            RETURN TRIGGER 
+            AS $$
+            DECLARE
+            rec recor;
+            contador integer := 0;
+            BEGIN
+            FOR rec IN SLECT * FROM nombreTabla LOOP
+                rec.nombreColumna
+                RAISE NOTICE 'El dato de la variable es %', rec.nombreColumna;
+                contador := contadro + 1;
+            END LOOP;
+            INSERT INTO Nombre_tabla (total, tiempo)
+            VALUES (contador, now() )
+            RETURN NEW;
+            END
+            $$
+            LANGUAGE PLPGSQL;
+    
+    - Creamos un Trigger
+        CREATE TRIGGER nombre_triger
+            AFTER INSERTON public.nombreTabla       --Nombre de la tabla a la que queremos crear el control 
+                                                      de INSERT - DELETE - UPDATE
+            FOR EACH ROW
+            EXECUTE PROCEDURE public.nombrePl();    --Nombre del pl al cual esta vinculado el Trigger  
+                                               
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Obtener datos de host remotos
+    - Verificar si la funcion de dbLink() esta activa
+    
+    - Creamos la exrencion de dbLink
+        CREATE Extension dbLink;     
+    
+    - Como conectarse     
+        - Select * from 
+          dbLink('dbname = nombreBasedatos
+                port = 5432
+                host = id del equipo 
+                user = con el que vamos a acceder
+                password = contraseña del usuario',
+                'SELECT id , nombreColumna, nombreColumna1' FROM nombreTabla) Consulta
+                AS nombreTabla (id integer, nombreColumna tipo, nombreColumna1 tipo );    
+    
+    - Como conectarse con una tabla local 
+        - Select * from Nombre_tabla
+        JOIN 
+           dbLink('dbname = nombreBasedatos
+                port = 5432
+                host = id del equipo 
+                user = con el que vamos a acceder
+                password = contraseña del usuario',
+                'SELECT id , nombreColumna, nombreColumna1' FROM nombreTabla) Consulta
+                AS nombreTabla (id integer, nombreColumna tipo, nombreColumna1 tipo )
+        USING (id);     si esta repedida en los 2 campos o ON (pasajeros.id = datos_remotos.id);
+    
+    - Como conectarse de una tabla local a una remota
+        - Select * from Nombre_tabla
+        RIGHT JOIN 
+           dbLink('dbname = nombreBasedatos
+                port = 5432
+                host = id del equipo 
+                user = con el que vamos a acceder
+                password = contraseña del usuario',
+                'SELECT id , nombreColumna, nombreColumna1' FROM nombreTabla) Consulta
+                AS nombreTabla (id integer, nombreColumna tipo, nombreColumna1 tipo )
+        USING (id)
+        WHERE nombreTabla IS NULL;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Transacciones
+    - Sirve para crear un bloque de consultas que todas las tareas se ejecuten correctamente  
+        - Estructura
+            BEGIN
+            <Consulta>
+            COMMIT | ROLLBACK
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Otras extenciones para postgres     https://www.postgresql.org/docs/11/contrib.html
+    - Buscamos en la pagina de postgresql si la extencion esta instalada  y si esta creamos la 
+      extencion copn el nombre de lña carpeta donde esta (F.15. fuzzystrmatch)
+            CREATE EXTENSION fuzzystrmatch
+    
+    - Para comparar 2 palabras y mostrar la cantidad de letras que toca cambiar para que sean iguales      
+        SELECT levenshtein ('palabra1','palabra2')  
+    
+    - Compara 2 palabras que cuando se pronuncian en ingles suenan parecidas de 0 a 4 que tan 
+      similares son 
+        SELECT difference ('palabra1','palabra2') 
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Backups y Restauracion 
+    - Click derecho en la base de datos 
+    - Backup 
+        - General 
+            - Filename              (Nombre del archivo del Backup)
+            - Format                (Formato del Backup)
+                - Custom        -> Es un formato unico que usa postgres para guardar informacion 
+                                   de la base de datos solo, se puede utilizar con PgAdmin
+                - Tar           -> Es uin archivo coimprimido que tiene la estructura de la base de datos 
+                - Plain         -> Es SQL plano, tendra los CREATE, INSERT. Es una gran 
+                                   consulta de bases de datos
+                - Directory     -> Tiene la estructura sin comprimir de la base de datos 
+            - Compression ratio    (Es la cantidad de veces que el ciclo de compresion se 
+                                   ejecuta sobre el archivo para que el archivo sea mas pequeño (NO TOCAR))
+            - Encording             (Codificacion)
+            - Number of jobs        (Asigna la cantidad de hilos del procesador)
+            - Role name             (quien va ha ser el dueño de ese dump)
+            - ... Cambiamos el lugar de donde guardamos la base de datos 
+        
+        - Dump options ( Darle en el signo ? para tener mas detalles)
+            - Selections
+                - Pre-data      ()
+                - Post-data     ()
+                - Data          ()
+    
+            - Type of objects 
+                - Only data     () 
+                - Only schema   ()
+                - Blobs         (Son un tipo de datos que no son binarios (No es recomendable))
+            - Do not save
+                - Owner                 ()
+                - Privilege             ()
+                - Tablespace            ()
+                - Unlogged table data   ()
+                - Commets               ()
+
+    - Para Restauracion
+        - Creamos una nueva base de datos 
+        - Click Restart
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+Mantenimiento 
+    Se pudede hacer a nivel de bases de datos como a nivel de tablas (son muy diferentes)
+
+    - Click derecho -> Maintenance 
+         - Obtions
+            - Maintenance operation 
+                - VACUUM        (Vaciar)
+                    - FULL          (Revisa todas las tablas en memoria)
+                    - FREEZE        (Se congela mientras hace la limpieza)
+                    - ANALYZE       (Ejecuta una revision y no hace cambios)
+                - ANALYZE       (No hace ningun cambio a la tabla )
+                - REINDEX       ()
+                - CLUSTER       (Reorganiza la informacion en el disco)
+            - Verbose Messages  (Muestre en pantalla como le fue a la revision)
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
 Para saber el formato de del dato date 
     SELECT current_date;
 
