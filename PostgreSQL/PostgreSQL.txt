@@ -1033,12 +1033,92 @@ Mantenimiento
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+Replicas 
+    - Entramos a  https://app.cloudjiffy.co
+    - Creamos el servidor Master
+        - NEW EVIRONMENT            (para crear una nueva base de datos)
+            - Seleccionamos una nueva base de datos
+            - Public IPv4 (ON)
+            - Environment Name (colocamos nombre de la base de datos master) 
 
+    - Creamosel servidor replica 
 
+        - NEW EVIRONMENT                    (para crear una nueva base de datos)
+            - Seleccionamos una nueva base de datos
+            - Public IPv4                   (ON)
+            - Environment Name              (colocamos nombre de la base de datos Replica)
+
+    DEBE LLEGAR UN CORREO CON EL USUARIO Y CONTRASEÑA DE CADA UNA DE LAS BASES DE DATOS QUE CREEMOS
+    LAS CUALES USAREMOS PARA CONECTARNOS CON EL PgAdmin
+
+    - Creamos los 2  servidor en PgAdmin con el mismo nombre que los que creamos anteriormente
+    MASTER    
+        - Servers 
+        - Click derecho -> Server
+            - General 
+                - Name (Master)
+                - Server group (Servers)
+            - Connection
+                - Host name / adderss (Copiamos la segunda ip )
+                - Username (Usuario que llego al correo de confirmacion)
+                - Password (Contraseña que llego al correo de confirmacion)
+
+    REPLICA
+        - Servers 
+        - Click derecho -> Server
+            - General 
+                - Name (Master)
+                - Server group (Servers)
+            - Connection
+                - Host name / adderss (Copiamos la segunda ip)
+                - Username (Usuario que llego al correo de confirmacion)
+                - Password (Contraseña que llego al correo de confirmacion)
+
+    -------------------------------------------------------------------------------------------------------
+    
+    Configuracion de el servidor  (Master)
+    - Colocamos el raton encima de Node id
+    - Damos click en config
+    - Buscamos el archivo postgresql.conf
+        - Cambiamos los siguentes cambios quitamos #
+            - wal_level = hot_standby
+            - max_wal_senders = 2                   -- Es la cantidad de replicas que vamos a tener
+            - archive_mode = on                     -- No va a eliminar los archivos sino que los va ha 
+                                                       archivar
+            - archive_command = 'cp %p /tmp/%f '
+            - save 
+
+        - Buscamos el archivo pg_hba.conf
+            - Agregamos 
+                host        replication         all        primer_ip_replica/32     trust 
+
+    - Reiniciamos el sevicio     
+    - Colocamos el raton encima de Node id
+    - Damos click en Restart Nodes
+
+    *******************************************************************************************************
+    Configuracion de el servidor  (Replica)
+    - Colocamos el raton encima de Node id
+    - Damos click en Statics                -- Activa una consola
+        - sudo service postgresql stop
+        - rm -rf /var/lib/pgsql/data/*
+        - pg_basebackup -U nombreUsuario -R -D /var/lib/pgsql/data/ --host=primer_ip_master --port=5432 
+
+    - Vamos a SQL Databases : Confings
+        - Buscamos el archivo postgresql.conf
+        - Cambiamos los siguentes cambios quitamos #
+            - hot_standby = on 
+        - Save 
+
+    - sudo service postgresql start
+
+    - Vamos a PgAdmin
+    - Nos desconectamos del servidor de replica y nos volvemos a conectar
+    - nos toca colocar la cotraseña de Master  
+
+    EN LA RAMA MASTER YA PODEMOS CREAR BASES DE DATOS NORMALES 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 Para saber el formato de del dato date 
     SELECT current_date;
 
